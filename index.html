@@ -4,8 +4,55 @@
   <meta charset="utf-8">
 　<title>Kano Front Tools</title> 
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
-    <h2>Front Web site</h2>
+
+    <h2>Front Web site, rev 20200704a</h2>
+    <input type="button" value="データ呼び出し" onclick="OnButtonClick();"/><br />
+    <p><div id="dummyData">ここにデータを呼ぶ</div></p>
+
+    <script>
+    // ボタンが押されたらAPI呼び出し
+    function OnButtonClick() {
+      console.log('API見に行くぜ');
+      // 1. API呼び出し
+      $.ajax({
+        //url: "https://kanotesttools.azurewebsites.net/",
+        //url: "https://kano.cis.nagao.cfdevs.net/api/v1/num?key=1",
+        url: "http://localhost:1337/api/v1/num?key=1",
+        type: "POST",
+        data: "key=1",
+        dataType: "json", // type [xml, html, script, json, jsonp, text]
+        timespan: 1000
+
+        // 2. 応答が成功したとき
+      }).done(function(data, strStatus, jqXMLHttpRequest) {
+        $("#span1").text(jqXMLHttpRequest.Status); // 200等
+        $("#span2").text(strStatus); // success等
+        //$("#span3").text(data[][]);
+        console.log(data);
+        var objJSON = JSON.parse(JSON.stringify(data));
+        document.getElementById('dummyData').innerHTML = objJSON.numData;
+
+      // 3. 応答が失敗したとき
+      }).fail(function(jqXMLHttpRequest, strStatus, errorThrown){
+        $("#span1").text(jqXMLHttpRequest.Status); // 200等
+        $("#span2").text(strStatus); // success等
+        $("#span3").text(errorThrown);
+
+      // 4. 成功・失敗に関わらず実行される
+      }).always(function(){
+        $("#span6").text("Completed");
+      });
+
+    } // OnButtonClick()
+    </script>
+
+    <p>１ HTTP応答：<span id="span1"></span></p>
+    <p>２ Status：<span id="span2"></span></p>
+    <p>３ Error：<span id="span3"></span></p>
+    <p>６ 進捗：<span id="span6"></span></p>
+
 </body>
 </html>
