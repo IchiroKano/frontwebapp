@@ -15,12 +15,13 @@ function Particle(x, y, hu, firework){
   
     this.applyForce = function(force) {
       this.acc.add(force);
+//      this.acc.add(force);
     }
   
     this.update = function(){
       if (!this.firework){
         this.vel.mult(0.85);
-        this.lifespan -= 6;
+        this.lifespan -= 1;
       }
       this.vel.add(this.acc);
       this.pos.add(this.vel);
@@ -38,7 +39,7 @@ function Particle(x, y, hu, firework){
     this.show = function(){
       colorMode(HSB);
       if(!this.firework){
-        strokeWeight(3);
+        strokeWeight(3); //玉の大きさ
         stroke(hu, 255, 255, this.lifespan);// hsbの定義で線を描画
       }else{
         strokeWeight(6);

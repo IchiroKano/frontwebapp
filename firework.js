@@ -18,12 +18,12 @@ function Firework(){
       if (!this.exploded){
         this.firework.applyForce(gravity);// gravity分だけ下に下げる関数(particle.jsで定義)
         this.firework.update();
-        if (this.firework.vel.y >= 0) {
+        if (this.firework.vel.y >= 1) {
           this.exploded = true;
           this.explode();
         }
       }
-      for (var i = this.particles.length-1; i >= 0; i--){
+      for (var i = this.particles.length-1; i >= 1; i--){
         this.particles[i].applyForce(gravity);
         this.particles[i].update();
         if(this.particles[i].done()){
@@ -34,7 +34,7 @@ function Firework(){
   
   // 花火がどのように爆発して開くのかをチェックする関数
     this.explode = function(){
-      for (var i = 0; i < 100; i++){
+      for (var i = 0; i < 100; i=i+1){
         var p = new Particle(this.firework.pos.x, this.firework.pos.y, this.hu, false);
         this.particles.push(p);
       }
@@ -45,7 +45,7 @@ function Firework(){
       if (!this.exploded){
         this.firework.show();
       }
-      for (var i = 0; i < this.particles.length; i++){
+      for (var i = 0; i < this.particles.length; i=i+1){
         this.particles[i].show();
       }
     }
