@@ -6,24 +6,27 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">　<title>Kano Front Tools</title> 
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
 
     <h2>Front Web site, rev 20200704a</h2>
-    <input type="button" value="データ呼び出し" onclick="OnButtonClick();"/><br />
+    <input type="button" value="データ呼び出しkey=1" onclick="OnButtonClick('1');"/>
+    <input type="button" value="呼出key=2" onclick="OnButtonClick('2');"/>
+    <input type="button" value="呼出key=3" onclick="OnButtonClick('3');"/><br />
     <p><div id="dummyData">ここにデータを呼ぶ</div></p>
 
     <script>
     // ボタンが押されたらAPI呼び出し
-    function OnButtonClick() {
+    function OnButtonClick(strNum) {
       console.log('API見に行くぜ');
       // 1. API呼び出し
       $.ajax({
         //url: "https://kanotesttools.azurewebsites.net/",
-        url: "https://kano.cis.nagao.cfdevs.net/api/v1/num?key=1",
+        url: "https://kano.cis.nagao.cfdevs.net/api/v1/num",
         //url: "http://localhost:1337/api/v1/num?key=1",
-        type: "POST",
-        data: "key=1",
+        type: "GET",
+        data: "key=" + strNum,
         dataType: "json", // type [xml, html, script, json, jsonp, text]
         timespan: 1000
 
@@ -34,8 +37,9 @@
         //$("#span3").text(data[][]);
         console.log(data);
         var objJSON = JSON.parse(JSON.stringify(data));
-        document.getElementById('dummyData').innerHTML = objJSON.numData;
-
+        document.getElementById('dummyData').innerHTML = objJSON;
+        // グラフ描画
+        drawChart(objJSON);
       // 3. 応答が失敗したとき
       }).fail(function(jqXMLHttpRequest, strStatus, errorThrown){
         $("#span1").text(jqXMLHttpRequest.Status); // 200等
@@ -55,6 +59,68 @@
     <p>３ Error：<span id="span3"></span></p>
     <p>６ 進捗：<span id="span6"></span></p>
 
+    <h3>折れ線グラフを描いてみる</h3>
+    <div id="chart_area" style="width: 600px; height: 400px;"></div>
+    <script type = "text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      var dataArray = [
+            ['year','data'],
+            ['2016',810],
+            ['2017',843],
+            ['2018',81],
+            ['2019',876],
+            ['2020',1902]
+        ];
+      //google.charts.setOnLoadCallback( drawChart(dataArray) );
+      google.charts.setOnLoadCallback( drawChart );
+
+      //function drawChart(dataArray) {
+      function drawChart(dataJSON) {
+        if(dataJSON==null) {
+          var data = google.visualization.arrayToDataTable(dataArray);
+        } else {
+          var data = google.visualization.arrayToDataTable(dataJSON);
+        };
+        var options = {
+          title: '折れ線グラフ（推移）',
+          hAxis: {title:'年', titleTextStyle: { color: '#333'}},
+          vAxis: {minValue: 0}
+        };
+        var chart = new google.visualization.AreaChart( document.getElementById('chart_area'));
+        chart.draw(data, options);
+      }
+    </script>
+
+    <h3>棒グラフを描いてみる</h3>
+    <div id="chart_column" style="width: 600px; height: 400px;"></div>
+    <script type = "text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart2);
+
+      function drawChart2() {
+        var data = google.visualization.arrayToDataTable(
+          [
+            ['Year', 'data1', 'data2'],
+            ['2015', 800, 650],
+            ['2016', 810, 674],
+            ['2017', 843, 550],
+            ['2018', 881, 1050],
+            ['2019', 876, 422],
+            ['2020', 902, 740]
+          ]
+        );
+        var options = {
+          title: '棒グラフ（推移）',
+          width: 600,
+          height: 400,
+          bar: {groupWidth: "95%"},
+          legend: {position: 'none'},
+          isStacked: true,
+        };
+        var chart = new google.visualization.ColumnChart( document.getElementById('chart_column'));
+        chart.draw(data, options);
+      }
+    </script>
 
 </body>
 </html>
